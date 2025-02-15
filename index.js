@@ -1,4 +1,4 @@
-import express from "express";
+import express, { response } from "express";
 import cors from "cors";
 import User from "./model/User.js";
 import syncTableDatabase from "./database/sync-table-database.js";
@@ -10,17 +10,18 @@ const port = 3000;
 app.use(cors());
 app.use(express.json());
 
-app.post("/", async (request, response) => {
-  const { name, birthdate } = request.body;
-  const users = await User.create({ name, birthdate });
-  const order = await Order.create({ user_id: users.id });
-  return response.status(200).json(`Dados salvos com sucesso`);
-});
-
-app.get("/", async (request, response) => {
-  const user = request.body;
-  //   const users = await User.sync();
-  return response.status(200).json(`Os dados a serem salvos são: ${user}`);
+app.post("/product", async (request, response) => {
+  try {
+  const { name, brand, description } = request.body;
+  const product = await Product.create({ name,brand, description });
+  return response
+  .status(200)
+  .json({message:`Produto cadastrado com sucesso`,data:product});
+  } catch(error) {
+    return response
+    .status(500)
+    .json(`Nao foi possivel cadastrar o produto ${error.message}`);
+  }
 });
 
 const initApp = async () => {
